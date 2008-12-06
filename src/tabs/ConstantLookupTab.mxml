@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			
+			import flash.utils.getTimer;
+			import r1.deval.D
+
+			private var time:Number
+			
+			[Bindable]
+			private var chartDataProvider:ArrayCollection = new ArrayCollection;
+			
+			[Bindable]
+			private var condition1:String =  'inside constant lookup'
+			private var code1:String =  'var tmpVar:String;\n' +
+										'for(var i:Number=0; i<10000; i++)\n' +
+										'{\n' +
+										'	tmpVar = MouseEvent.CLICK\n' +
+										'}\n' ;
+									
+			
+			[Bindable]
+			private var condition2:String = 'outside constant lookup'
+			private var code2:String =  'var tmpVar:String;\n' +
+										'var constant:String= MouseEvent.CLICK ;\n' +
+										'for(var i:Number=0; i<10000; i++)\n' +
+										'{\n' +
+										'	tmpVar = constant\n' +
+										'}\n' ;
+			
+									   
+			private function runStdTest():Number
+			{
+				time = getTimer();
+				this.executeCode(code1)
+				return (getTimer() - time);
+			}
+			
+			
+			private function runOptTest():Number
+			{
+				time = getTimer();
+				this.executeCode(code2)
+				return (getTimer() - time);
+			}
+			
+		
+			
+			
+			private function run():void
+			{
+				var result1:Number = runStdTest()
+				var result2:Number = runOptTest()
+				
+				standardResult.text	  = result1.toString();
+				optimizedResult.text  = result2.toString();
+				
+				chart.visible = true
+				
+				chartDataProvider.removeAll()
+				chartDataProvider.addItem({label:condition1,value:result1})
+				chartDataProvider.addItem({label:condition2,value:result2})
+			}
+			
+			private function showSource(code:String):void
+			{
+				mx.controls.Alert.show(code)
+			}
+			
+			private function executeCode( code : String ):void 
+		    {
+		        try
+		        { 
+		            var result:Object = D.eval( code );
+		        }
+		        catch ( e:Error )
+		        {
+		            mx.controls.Alert.show( "Unable to execute code", "ERROR" );
+		        }
+		      
+		    }
+
+			
+
+		]]>
+	</mx:Script>
+	<mx:Form>
+		<mx:FormHeading label="{'Compare performance between' + condition1 + 'and ' + condition2 + ' over a loop en ms'}"/>
+		<mx:Button label="run test" click="run()"/>
+		<mx:FormItem label="{condition1}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="standardResult"/>
+				<mx:LinkButton id="srcStandardResult" label="src" click="showSource(code1)"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="{condition2}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="optimizedResult"/>
+				<mx:LinkButton id="srcOptimizedResult" label="src" click="showSource(code2)"/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:SeriesInterpolate id="eff"/>
+	<mx:ColumnChart id="chart" visible="false" width="100%" height="100%" dataProvider="{this.chartDataProvider}" showDataTips="true">
+            <mx:series>
+                <mx:ColumnSeries showDataEffect="{eff}" yField="value"/>
+            </mx:series>
+            <mx:horizontalAxis>
+            	<mx:CategoryAxis categoryField="label"/>
+        	</mx:horizontalAxis>
+    </mx:ColumnChart>
+
+
+</mx:VBox>

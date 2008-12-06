@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="init()" backgroundColor="#fbf6e1" xmlns:tabs="tabs.*" horizontalCenter="center" xmlns:viewStackEffects="org.efflex.viewStackEffects.*">
+ <mx:Style source="assets/css/Main.css" />
+<viewStackEffects:Scroll id="gridZoom" duration="1000"/>
+<mx:ToggleButtonBar id="toggleButtonBar" dataProvider="{viewStack}" color="0xFFFFFF"/>
+<mx:ViewStack width="100%" height="100%" id="viewStack" creationPolicy="all" backgroundColor="#3E3E3E">
+	<mx:Box label="welcome" hideEffect="gridZoom" showEffect="gridZoom">
+		<mx:Label fontSize="22" text="Welcome to the AS3 performance tester"/>
+		<mx:Label fontSize="14" text="The aim of this application is to provide test based peformance guidance on AS3 syntax."/>
+		<mx:LinkButton label="you can contribute! Project is hosted on github"/>
+	</mx:Box>
+	<tabs:IncrementTab label="increment" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:DivisionTab label="division" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:ArrayLoopTab label="array loop" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:ConstantLookupTab label="constant lookup" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:SimpleVariableInstantiationTab label="variable instantiation" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:GenericComparisonTab label="generic comparison" hideEffect="gridZoom" showEffect="gridZoom"/>
+</mx:ViewStack>
+</mx:Application>
