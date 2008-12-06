@@ -2,6 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			import mx.managers.CursorManager;
 			import mx.controls.Alert;
 			import mx.collections.ArrayCollection;
 			
@@ -16,7 +17,7 @@
 			[Bindable]
 			private var condition1:String =  'iterator is number'
 			private var code1:String =  'var testArray:Array = [1,2,3,4,5,6,7,8,9,10]\n' +
-										'for(var t:int = 0; t<1000; t++)\n' +
+										'for(var t:int = 0; t<50000; t++)\n' +
 										'{\n' +
 										'	var tmpVar:int;\n' +
 										'	for(var i:Number=0; i<testArray.length; i++)\n' +
@@ -28,7 +29,7 @@
 			[Bindable]
 			private var condition2:String = 'iterator is int'
 			private var code2:String =  'var testArray:Array = [1,2,3,4,5,6,7,8,9,10]\n' +
-										'for(var t:int = 0; t<1000; t++)\n' +
+										'for(var t:int = 0; t<50000; t++)\n' +
 										'{\n' +
 										'	var tmpVar:int;\n' +
 										'	for(var i:int=0; i<testArray.length; i++)\n' +
@@ -40,7 +41,7 @@
 			private var condition3:String  = 'length is out'				   
 			private var code3:String = 'var testArray:Array = [1,2,3,4,5,6,7,8,9,10]\n' +
 										'var lenght:int = testArray.length\n' +
-										'for(var t:int = 0; t<1000; t++)\n' +
+										'for(var t:int = 0; t<50000; t++)\n' +
 										'{\n' +
 										'	var tmpVar:int;\n' +
 										'	for(var i:int=0; i<lenght; i++)\n' +
@@ -48,11 +49,18 @@
 										'	tmpVar = testArray[i];\n' +
 										'	}\n' +
 										'}\n' ;
-									   
+			private var testArray:Array = [1,2,3,4,5,6,7,8,9,10]   
 			private function runStdTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code1)
+				for(var t:int = 0; t<50000; t++)
+				{
+					var tmpVar:int;
+					for(var i:Number=0; i<testArray.length; i++)
+					{
+						tmpVar = testArray[i];
+					}
+				}
 				return (getTimer() - time);
 			}
 			
@@ -60,23 +68,51 @@
 			private function runOptTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code2)
+				for(var t:int = 0; t<50000; t++)
+				{
+					var tmpVar:int;
+					for(var i:int=0; i<testArray.length; i++)
+					{
+						tmpVar = testArray[i];
+					}
+				}
 				return (getTimer() - time);
 			}
 			
 			private function runOpt2Test():Number
 			{
 				time = getTimer();
-				this.executeCode(code3)
+				var lenght:int = testArray.length
+				for(var t:int = 0; t<50000; t++)
+				{
+					var tmpVar:int;
+					for(var i:int=0; i<lenght; i++)
+					{
+						tmpVar = testArray[i];
+					}
+				}
 				return (getTimer() - time);
 			}
 			
 			
 			private function run():void
 			{
-				var result1:Number = runStdTest()
-				var result2:Number = runOptTest()
-				var result3:Number = runOpt2Test()
+				mx.managers.CursorManager.setBusyCursor()
+				var result1:Number = 0
+				var result2:Number = 0
+				var result3:Number = 0
+				
+				var loop:Number =10
+				for(var i:int;i<loop;i++)
+				{
+					result1 += runStdTest()
+					result2 += runOptTest()
+					result3 += runOpt2Test()
+				}
+				
+				result1 = (result1/loop)
+				result2 = (result2/loop)
+				result3 = (result3/loop)
 				
 				standardResult.text	  = result1.toString();
 				optimizedResult.text  = result2.toString();
@@ -88,28 +124,15 @@
 				chartDataProvider.addItem({label:condition1,value:result1})
 				chartDataProvider.addItem({label:condition2,value:result2})
 				chartDataProvider.addItem({label:condition3,value:result3})
+				
+				mx.managers.CursorManager.removeBusyCursor()
 			}
 			
 			private function showSource(code:String):void
 			{
 				mx.controls.Alert.show(code)
 			}
-			
-			private function executeCode( code : String ):void 
-		    {
-		        try
-		        { 
-		            var result:Object = D.eval( code );
-		        }
-		        catch ( e:Error )
-		        {
-		            mx.controls.Alert.show( "Unable to execute code", "ERROR" );
-		        }
-		      
-		    }
-
-			
-
+		
 		]]>
 	</mx:Script>
 	<mx:Form>

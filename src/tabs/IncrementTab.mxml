@@ -2,6 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			import mx.managers.CursorManager;
 			import mx.controls.Alert;
 			import mx.collections.ArrayCollection;
 			
@@ -11,23 +12,28 @@
 			private var time:Number
 			
 			[Bindable]
-			private var chartDataProvider:ArrayCollection = new ArrayCollection
+			private var chartDataProvider:ArrayCollection = new ArrayCollection;
 			
-			
+			[Bindable]
+			private var condition1:String =  'x=x+1'
 			private var code1:String =  'var test:int = 1;\n' +
-										'for (var i:int = 0; i < 10000; i++)\n' +
+										'for (var i:int = 0; i < 100000; i++)\n' +
 										'{\n' +
 										'	test = test + 1;\n' +
-										'}\n' 
+										'}\n' ;
 			
+			[Bindable]
+			private var condition2:String =  'x++'
 			private var code2:String = 'var test:int = 1\n' +
-									   'for (var i:int = 0; i < 10000; i++)\n' +
+									   'for (var i:int = 0; i < 100000; i++)\n' +
 									   '{\n' +
 									   '	test++;\n' +
-									   '}\n' 
-									   
+									   '}\n';
+									    
+			[Bindable]
+			private var condition3:String =  'x+=1'						   
 			private var code3:String = 'var test:int = 1\n' +
-									   'for (var i:int = 0; i < 10000; i++)\n' +
+									   'for (var i:int = 0; i < 100000; i++)\n' +
 									   '{\n' +
 									   '	test+=1;\n' +
 									   '}\n' 
@@ -35,7 +41,11 @@
 			private function runStdTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code1)
+				var test:int = 1;
+				for (var i:int = 0; i < 100000; i++)
+				{
+					test = test + 1;
+				} 
 				return (getTimer() - time);
 			}
 			
@@ -43,23 +53,44 @@
 			private function runOptTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code2)
+				var test:int = 1;
+				for (var i:int = 0; i < 100000; i++)
+				{
+					test++;
+				}  
 				return (getTimer() - time);
 			}
 			
 			private function runOpt2Test():Number
 			{
 				time = getTimer();
-				this.executeCode(code3)
+				var test:int = 1;
+				for (var i:int = 0; i < 100000; i++)
+				{
+					test += 1;
+				} 
 				return (getTimer() - time);
 			}
 			
 			
 			private function run():void
 			{
-				var result1:Number = runStdTest()
-				var result2:Number = runOptTest()
-				var result3:Number = runOpt2Test()
+				mx.managers.CursorManager.setBusyCursor()
+				var result1:Number = 0
+				var result2:Number = 0
+				var result3:Number = 0
+				
+				var loop:Number =50
+				for(var i:int;i<loop;i++)
+				{
+					result1 += runStdTest()
+					result2 += runOptTest()
+					result3 += runOpt2Test()
+				}
+				
+				result1 = (result1/loop)
+				result2 = (result2/loop)
+				result3 = (result3/loop)
 				
 				standardResult.text	  = result1.toString();
 				optimizedResult.text  = result2.toString();
@@ -68,49 +99,36 @@
 				chart.visible = true
 				
 				chartDataProvider.removeAll()
-				chartDataProvider.addItem({label:"x=x+1",value:result1})
-				chartDataProvider.addItem({label:"x++",value:result2})
-				chartDataProvider.addItem({label:"x+=1",value:result3})
+				chartDataProvider.addItem({label:condition1,value:result1})
+				chartDataProvider.addItem({label:condition2,value:result2})
+				chartDataProvider.addItem({label:condition3,value:result3})
+				
+				mx.managers.CursorManager.removeBusyCursor()
 			}
 			
 			private function showSource(code:String):void
 			{
 				mx.controls.Alert.show(code)
 			}
-			
-			private function executeCode( code : String ):void 
-		    {
-		        try
-		        { 
-		            var result:Object = D.eval( code );
-		        }
-		        catch ( e:Error )
-		        {
-		            mx.controls.Alert.show( "Unable to execute code", "ERROR" );
-		        }
-		      
-		    }
-
-			
-
+		
 		]]>
 	</mx:Script>
 	<mx:Form>
-		<mx:FormHeading label="Compare performance x=x+1, x++ et x+=1 over a loop en ms"/>
+		<mx:FormHeading label="{'Compare performance between' + condition1 + ', ' + condition2 + 'and ' + condition3 + ' over a loop en ms'}"/>
 		<mx:Button label="run test" click="run()"/>
-		<mx:FormItem label="x=x+1">
+		<mx:FormItem label="{condition1}">
 			<mx:HBox>
 				<mx:TextInput editable="false" id="standardResult"/>
 				<mx:LinkButton id="srcStandardResult" label="src" click="showSource(code1)"/>
 			</mx:HBox>
 		</mx:FormItem>
-		<mx:FormItem label="x++">
+		<mx:FormItem label="{condition2}">
 			<mx:HBox>
 				<mx:TextInput editable="false" id="optimizedResult"/>
 				<mx:LinkButton id="srcOptimizedResult" label="src" click="showSource(code2)"/>
 			</mx:HBox>
 		</mx:FormItem>
-		<mx:FormItem label="x+=1">
+		<mx:FormItem label="{condition3}">
 			<mx:HBox>
 				<mx:TextInput editable="false" id="optimized2Result"/>
 				<mx:LinkButton id="srcOptimized2Result" label="src" click="showSource(code3)"/>

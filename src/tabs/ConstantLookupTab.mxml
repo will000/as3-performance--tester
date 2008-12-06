@@ -2,6 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			import mx.managers.CursorManager;
 			import mx.controls.Alert;
 			import mx.collections.ArrayCollection;
 			
@@ -16,7 +17,7 @@
 			[Bindable]
 			private var condition1:String =  'inside constant lookup'
 			private var code1:String =  'var tmpVar:String;\n' +
-										'for(var i:Number=0; i<10000; i++)\n' +
+										'for(var i:Number=0; i<100000; i++)\n' +
 										'{\n' +
 										'	tmpVar = MouseEvent.CLICK\n' +
 										'}\n' ;
@@ -35,7 +36,11 @@
 			private function runStdTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code1)
+				var tmpVar:String;
+				for(var i:Number=0; i<100000; i++)
+				{
+					tmpVar = MouseEvent.CLICK
+				}
 				return (getTimer() - time);
 			}
 			
@@ -43,17 +48,32 @@
 			private function runOptTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code2)
+				var tmpVar:String;
+				var constant:String= MouseEvent.CLICK
+				for(var i:Number=0; i<100000; i++)
+				{
+					tmpVar = constant
+				}
 				return (getTimer() - time);
 			}
-			
-		
-			
-			
+	
 			private function run():void
 			{
-				var result1:Number = runStdTest()
-				var result2:Number = runOptTest()
+				mx.managers.CursorManager.setBusyCursor()
+				var result1:Number = 0
+				var result2:Number = 0
+				
+				
+				var loop:Number =10
+				for(var i:int;i<loop;i++)
+				{
+					result1 += runStdTest()
+					result2 += runOptTest()
+				}
+				
+				result1 = (result1/loop)
+				result2 = (result2/loop)
+				
 				
 				standardResult.text	  = result1.toString();
 				optimizedResult.text  = result2.toString();
@@ -63,6 +83,8 @@
 				chartDataProvider.removeAll()
 				chartDataProvider.addItem({label:condition1,value:result1})
 				chartDataProvider.addItem({label:condition2,value:result2})
+				
+				mx.managers.CursorManager.removeBusyCursor()
 			}
 			
 			private function showSource(code:String):void
@@ -70,25 +92,10 @@
 				mx.controls.Alert.show(code)
 			}
 			
-			private function executeCode( code : String ):void 
-		    {
-		        try
-		        { 
-		            var result:Object = D.eval( code );
-		        }
-		        catch ( e:Error )
-		        {
-		            mx.controls.Alert.show( "Unable to execute code", "ERROR" );
-		        }
-		      
-		    }
-
-			
-
 		]]>
 	</mx:Script>
 	<mx:Form>
-		<mx:FormHeading label="{'Compare performance between' + condition1 + 'and ' + condition2 + ' over a loop en ms'}"/>
+		<mx:FormHeading label="{'Compare performance between ' + condition1 + 'and ' + condition2 + ' over a 100000 loop en ms'}"/>
 		<mx:Button label="run test" click="run()"/>
 		<mx:FormItem label="{condition1}">
 			<mx:HBox>

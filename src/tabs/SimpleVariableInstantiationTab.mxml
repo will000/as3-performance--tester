@@ -2,6 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			import mx.managers.CursorManager;
 			import mx.controls.Alert;
 			import mx.collections.ArrayCollection;
 			
@@ -35,7 +36,14 @@
 			private function runStdTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code1)
+				for(var i:int=0; i<100000; i++)
+				{
+					var v1:Number=10;
+					var v2:Number=10;
+					var v3:Number=10;
+					var v4:Number=10;
+					var v5:Number=10;
+				};
 				return (getTimer() - time);
 			}
 			
@@ -43,17 +51,30 @@
 			private function runOptTest():Number
 			{
 				time = getTimer();
-				this.executeCode(code2)
+				for(var i:int=0; i<100000; i++)
+				{
+					var v1:Number=10, v2:Number=10, v3:Number=10, v4:Number=10, v5:Number=10;
+				}
 				return (getTimer() - time);
 			}
 			
-			
-			
-			
 			private function run():void
 			{
-				var result1:Number = runStdTest()
-				var result2:Number = runOptTest()
+				mx.managers.CursorManager.setBusyCursor()
+				var result1:Number = 0
+				var result2:Number = 0
+				
+				
+				var loop:Number =10
+				for(var i:int;i<loop;i++)
+				{
+					result1 += runStdTest()
+					result2 += runOptTest()
+				}
+				
+				result1 = (result1/loop)
+				result2 = (result2/loop)
+				
 				
 				standardResult.text	  = result1.toString();
 				optimizedResult.text  = result2.toString();
@@ -63,28 +84,15 @@
 				chartDataProvider.removeAll()
 				chartDataProvider.addItem({label:condition1,value:result1})
 				chartDataProvider.addItem({label:condition2,value:result2})
+				
+				mx.managers.CursorManager.removeBusyCursor()
 			}
 			
 			private function showSource(code:String):void
 			{
 				mx.controls.Alert.show(code)
 			}
-			
-			private function executeCode( code : String ):void 
-		    {
-		        try
-		        { 
-		            var result:Object = D.eval( code );
-		        }
-		        catch ( e:Error )
-		        {
-		            mx.controls.Alert.show( "Unable to execute code", "ERROR" );
-		        }
-		      
-		    }
-
-			
-
+		
 		]]>
 	</mx:Script>
 	<mx:Form>
