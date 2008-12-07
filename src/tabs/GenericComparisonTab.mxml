@@ -70,6 +70,7 @@
 	</mx:Script>
 	<mx:Form>
 		<mx:FormHeading label="{'Compare performance between 2 scripts'}"/>
+		<mx:FormHeading label="{'EXPERIMENTAL! long running scripts will throw an error.'}"/>
 		<mx:FormItem label="script 1">
 			<mx:HBox>
 				<mx:TextArea id="script1" width="500" height="300"/>
