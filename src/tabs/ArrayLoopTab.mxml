@@ -136,7 +136,7 @@
 		]]>
 	</mx:Script>
 	<mx:Form>
-		<mx:FormHeading label="{'Compare performance between' + condition1 + ', ' + condition2 + 'and ' + condition3 + ' over a loop en ms'}"/>
+		<mx:FormHeading label="{'Compare performance between ' + condition1 + ', ' + condition2 + ' and ' + condition3 + ' over a loop en ms'}"/>
 		<mx:Button label="run test" click="run()"/>
 		<mx:FormItem label="{condition1}">
 			<mx:HBox>
