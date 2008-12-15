@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import __AS3__.vec.Vector;
+			import mx.managers.CursorManager;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			
+			import flash.utils.getTimer;
+			
+			//http://www.lostinactionscript.com/blog/index.php/2008/09/28/tips-on-how-to-write-efficient-as3/
+
+			private var time:Number
+			
+			[Bindable]
+			private var chartDataProvider:ArrayCollection = new ArrayCollection;
+			
+			[Bindable]
+			private var condition1:String =  'new object()'
+			private var code1:String =  'for(var t:int = 0; t<5000; t++){var toto:Object = new Object()}';
+			
+			[Bindable]
+			private var condition2:String = '{}'
+			private var code2:String =  'for(var t:int = 0; t<5000; t++){var toto:Object = {} }';
+			
+			[Bindable]
+			private var condition3:String  = 'new Array'				   
+			private var code3:String = 'for(var t:int = 0; t<5000; t++){var array:Array = new Array()}';
+		
+			[Bindable]
+			private var condition4:String  = '[]'				   
+			private var code4:String = 'for(var t:int = 0; t<5000; t++){var array:Array = []}';
+			
+			[Bindable]
+			private var condition5:String  = 'new vector'				   
+			private var code5:String = 'for(var t:int = 0; t<5000; t++){var vector:Vector.<int> = new Vector.<int>}';
+			
+			[Bindable]
+			private var condition6:String  = 'new ArrayCollection'				   
+			private var code6:String = 'for(var t:int = 0; t<5000; t++){var array:ArrayCollection = new ArrayCollection}'
+										
+			private function runOpt0Test():Number
+			{
+				time = getTimer();
+				for(var t:int = 0; t<5000; t++)
+				{
+					var toto:Object = new Object()
+				}
+				return (getTimer() - time);
+			}
+			
+			
+			private function runOpt1Test():Number
+			{
+				time = getTimer();
+				for(var t:int = 0; t<5000; t++)
+				{
+					var toto:Object = {}
+				}
+				return (getTimer() - time);
+			}
+			
+			private function runOpt2Test():Number
+			{
+				time = getTimer();
+				for(var t:int = 0; t<5000; t++)
+				{
+					var array:Array = new Array
+				}
+				return (getTimer() - time);
+			}
+			
+			private function runOpt3Test():Number
+			{
+				time = getTimer();
+				for(var t:int = 0; t<5000; t++)
+				{
+					var array:Array = []
+				}
+				return (getTimer() - time);
+			}
+			private function runOpt4Test():Number
+			{
+				time = getTimer();
+				for(var t:int = 0; t<5000; t++)
+				{
+					var vector:Vector.<int> = new Vector.<int>
+				}
+				return (getTimer() - time);
+			}
+			private function runOpt5Test():Number
+			{
+				time = getTimer();
+				for(var t:int = 0; t<5000; t++)
+				{
+					var array:ArrayCollection = new ArrayCollection
+				}
+				return (getTimer() - time);
+			}
+			
+			
+			private function run():void
+			{
+				mx.managers.CursorManager.setBusyCursor()
+				var result1:Number = 0
+				var result2:Number = 0
+				var result3:Number = 0
+				var result4:Number = 0
+				var result5:Number = 0
+				var result6:Number = 0
+				
+				var loop:Number =10
+				for(var i:int;i<loop;i++)
+				{
+					result1 += runOpt0Test()
+					result2 += runOpt1Test()
+					result3 += runOpt2Test()
+					result4 += runOpt3Test()
+					result5 += runOpt4Test()
+					if(cbArrayCollection.selected)
+						result6 += runOpt5Test()
+				}
+				
+				result1 = (result1/loop)
+				result2 = (result2/loop)
+				result3 = (result3/loop)
+				result4 = (result4/loop)
+				result5 = (result5/loop)
+				result6 = (result6/loop)
+				
+				standardResult.text	  = result1.toString();
+				optimizedResult.text  = result2.toString();
+				optimized2Result.text = result3.toString();
+				optimized3Result.text = result4.toString();
+				optimized4Result.text = result5.toString();
+				optimized5Result.text = result6.toString();
+			
+				
+				chart.visible = true
+				
+				chartDataProvider.removeAll()
+				chartDataProvider.addItem({label:condition1,value:result1})
+				chartDataProvider.addItem({label:condition2,value:result2})
+				chartDataProvider.addItem({label:condition3,value:result3})
+				chartDataProvider.addItem({label:condition4,value:result4})
+				chartDataProvider.addItem({label:condition5,value:result5})
+				chartDataProvider.addItem({label:condition6,value:result6})
+				
+				mx.managers.CursorManager.removeBusyCursor()
+			}
+			
+			private function showSource(code:String):void
+			{
+				mx.controls.Alert.show(code)
+			}
+		
+		]]>
+	</mx:Script>
+	<mx:Form>
+		<mx:FormHeading label="{'Compare performance between different types of instantiation'}"/>
+		<mx:Button label="run test" click="run()"/>
+		<mx:FormItem label="{condition1}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="standardResult"/>
+				<mx:LinkButton id="srcStandardResult" label="src" click="showSource(code1)"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="{condition2}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="optimizedResult"/>
+				<mx:LinkButton id="srcOptimizedResult" label="src" click="showSource(code2)"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="{condition3}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="optimized2Result"/>
+				<mx:LinkButton id="srcOptimized2Result" label="src" click="showSource(code3)"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="{condition4}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="optimized3Result"/>
+				<mx:LinkButton id="srcOptimized3Result" label="src" click="showSource(code4)"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="{condition5}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="optimized4Result"/>
+				<mx:LinkButton id="srcOptimized4Result" label="src" click="showSource(code5)"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<mx:FormItem label="{condition6}">
+			<mx:HBox>
+				<mx:TextInput editable="false" id="optimized5Result"/>
+				<mx:LinkButton id="srcOptimized5Result" label="src" click="showSource(code6)"/>
+				<mx:CheckBox label="include in the test" selected="false" id="cbArrayCollection"/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:SeriesInterpolate id="eff"/>
+	<mx:ColumnChart id="chart" visible="false" width="100%" height="100%" dataProvider="{this.chartDataProvider}" showDataTips="true">
+            <mx:series>
+                <mx:ColumnSeries showDataEffect="{eff}" yField="value"/>
+            </mx:series>
+            <mx:horizontalAxis>
+            	<mx:CategoryAxis categoryField="label"/>
+        	</mx:horizontalAxis>
+    </mx:ColumnChart>
+
+
+</mx:VBox>

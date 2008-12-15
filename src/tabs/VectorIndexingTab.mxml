@@ -2,106 +2,94 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			import util.ObjectGeneration;
+			import __AS3__.vec.Vector;
 			import mx.managers.CursorManager;
 			import mx.controls.Alert;
 			import mx.collections.ArrayCollection;
 			
 			import flash.utils.getTimer;
 			import r1.deval.D
-
+			
+			//credits: http://www.mikechambers.com/blog/2008/09/24/actioscript-3-vector-array-performance-comparison/#more-1540
+			
 			private var time:Number
 			
 			[Bindable]
 			private var chartDataProvider:ArrayCollection = new ArrayCollection;
 			
 			[Bindable]
-			private var condition1:String =  'x=x+1'
-			private var code1:String =  'var test:int = 1;\n' +
-										'for (var i:int = 0; i < 100000; i++)\n' +
+			private var condition1:String =  'vector'
+			private var code1:String =  'var sum:Number = 0;\n' +
+										'var len:int = vector.length;\n' +
+										'for(var i:int = 0; i < len; i++)\n' +
 										'{\n' +
-										'	test = test + 1;\n' +
-										'}\n' ;
+											'sum += vector[i];\n' +
+										'};\n';
+					
 			
 			[Bindable]
-			private var condition2:String =  'x++'
-			private var code2:String = 'var test:int = 1\n' +
-									   'for (var i:int = 0; i < 100000; i++)\n' +
-									   '{\n' +
-									   '	test++;\n' +
-									   '}\n';
+			private var condition2:String =  'array'
+			private var code2:String = 'var sum:Number = 0;\n' +
+										'var len:int = array.length;\n' +
+										'for(var i:int = 0; i < len; i++)\n' +
+										'{\n' +
+											'sum += array[i];\n' +
+										'};\n';
 									    
-			[Bindable]
-			private var condition3:String =  'x+=1'						   
-			private var code3:String = 'var test:int = 1\n' +
-									   'for (var i:int = 0; i < 100000; i++)\n' +
-									   '{\n' +
-									   '	test+=1;\n' +
-									   '}\n' 
-									   
 			private function runStdTest():Number
 			{
+				var vector:Vector.<Number> = util.ObjectGeneration.generateVector(10000)
 				time = getTimer();
-				var test:int = 1;
-				for (var i:int = 0; i < 100000; i++)
+				var sum:Number = 0;
+				var len:int = vector.length;
+				for(var i:int = 0; i < len; i++)
 				{
-					test = test + 1;
-				} 
+					sum += vector[i];
+				}
 				return (getTimer() - time);
 			}
 			
-			
+	/////////////////		
 			private function runOptTest():Number
 			{
+				var array:Array = util.ObjectGeneration.generateArray(10000);
 				time = getTimer();
-				var test:int = 1;
-				for (var i:int = 0; i < 100000; i++)
+				var sum:Number = 0;
+				var len:int = array.length;
+		
+				for(var i:int = 0; i < len; i++)
 				{
-					test++;
-				}  
+					sum += array[i];
+				}
 				return (getTimer() - time);
 			}
-			
-			private function runOpt2Test():Number
-			{
-				time = getTimer();
-				var test:int = 1;
-				for (var i:int = 0; i < 100000; i++)
-				{
-					test += 1;
-				} 
-				return (getTimer() - time);
-			}
-			
+	
 			
 			private function run():void
 			{
 				mx.managers.CursorManager.setBusyCursor()
 				var result1:Number = 0
 				var result2:Number = 0
-				var result3:Number = 0
 				
 				var loop:Number =50
 				for(var i:int;i<loop;i++)
 				{
 					result1 += runStdTest()
 					result2 += runOptTest()
-					result3 += runOpt2Test()
 				}
 				
 				result1 = (result1/loop)
 				result2 = (result2/loop)
-				result3 = (result3/loop)
 				
 				standardResult.text	  = result1.toString();
 				optimizedResult.text  = result2.toString();
-				optimized2Result.text = result3.toString();
 				
 				chart.visible = true
 				
 				chartDataProvider.removeAll()
 				chartDataProvider.addItem({label:condition1,value:result1})
 				chartDataProvider.addItem({label:condition2,value:result2})
-				chartDataProvider.addItem({label:condition3,value:result3})
 				
 				mx.managers.CursorManager.removeBusyCursor()
 			}
@@ -114,7 +102,7 @@
 		]]>
 	</mx:Script>
 	<mx:Form>
-		<mx:FormHeading label="{'Compare performance between ' + condition1 + ', ' + condition2 + ' and ' + condition3 + ' over a loop en ms'}"/>
+		<mx:FormHeading label="{'Compare performance between ' + condition1 + ' and ' + condition2 + ' over a loop en ms'}"/>
 		<mx:Button label="run test" click="run()"/>
 		<mx:FormItem label="{condition1}">
 			<mx:HBox>
@@ -126,12 +114,6 @@
 			<mx:HBox>
 				<mx:TextInput editable="false" id="optimizedResult"/>
 				<mx:LinkButton id="srcOptimizedResult" label="src" click="showSource(code2)"/>
-			</mx:HBox>
-		</mx:FormItem>
-		<mx:FormItem label="{condition3}">
-			<mx:HBox>
-				<mx:TextInput editable="false" id="optimized2Result"/>
-				<mx:LinkButton id="srcOptimized2Result" label="src" click="showSource(code3)"/>
 			</mx:HBox>
 		</mx:FormItem>
 	</mx:Form>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="init()" backgroundColor="#fbf6e1" xmlns:tabs="tabs.*" horizontalCenter="center" xmlns:viewStackEffects="org.efflex.viewStackEffects.*">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="init()" backgroundColor="#fbf6e1" xmlns:tabs="tabs.*" horizontalCenter="center" xmlns:viewStackEffects="org.efflex.viewStackEffects.*" viewSourceURL="srcview/index.html">
  <mx:Style source="assets/css/Main.css" />
-<viewStackEffects:Scroll id="gridZoom" duration="1000"/>
-<mx:ToggleButtonBar id="toggleButtonBar" dataProvider="{viewStack}" color="0xFFFFFF"/>
+<viewStackEffects:Grid id="gridZoom" duration="1000"/>
+<mx:ToggleButtonBar id="toggleButtonBar" dataProvider="{viewStack}" color="0xFFFFFF" width="950"/>
 <mx:ViewStack width="100%" height="100%" id="viewStack" creationPolicy="all" backgroundColor="#3E3E3E">
 	<mx:Box label="welcome" hideEffect="gridZoom" showEffect="gridZoom">
 		<mx:Label fontSize="22" text="Welcome to the AS3 performance tester"/>
@@ -14,6 +14,10 @@
 	<tabs:SimpleVariableInstantiationTab label="variable instantiation" hideEffect="gridZoom" showEffect="gridZoom"/>
 	<tabs:IncrementTab label="increment" hideEffect="gridZoom" showEffect="gridZoom"/>
 	<tabs:DivisionTab label="division" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:AssociativeTab label="associative arrays indexing" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:VectorIndexingTab label="vector loop" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:LoopTab label="loop" hideEffect="gridZoom" showEffect="gridZoom"/>
+	<tabs:ArrayAndObjectInstantiation label="Array/Object instantiaation" hideEffect="gridZoom" showEffect="gridZoom"/>
 	<tabs:GenericComparisonTab label="generic comparison" hideEffect="gridZoom" showEffect="gridZoom"/>
 </mx:ViewStack>
 </mx:Application>

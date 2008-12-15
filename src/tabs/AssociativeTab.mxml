@@ -15,63 +15,95 @@
 			private var chartDataProvider:ArrayCollection = new ArrayCollection;
 			
 			[Bindable]
-			private var condition1:String =  'x=x+1'
-			private var code1:String =  'var test:int = 1;\n' +
-										'for (var i:int = 0; i < 100000; i++)\n' +
+			private var condition1:String =  'object'
+			private var code1:String =  'var toto:String \n' +
+										'for (var i:int = 0; i < 10000; i++)\n' +
 										'{\n' +
-										'	test = test + 1;\n' +
-										'}\n' ;
+										'	toto = object[i.toString()]\n' +
+										'}';
+					
 			
 			[Bindable]
-			private var condition2:String =  'x++'
-			private var code2:String = 'var test:int = 1\n' +
-									   'for (var i:int = 0; i < 100000; i++)\n' +
-									   '{\n' +
-									   '	test++;\n' +
-									   '}\n';
+			private var condition2:String =  'array'
+			private var code2:String = 'var toto:String \n' +
+										'for (var i:int = 0; i < 10000; i++)\n' +
+										'{\n' +
+										'	toto = array[i.toString()]\n' +
+										'}\n';
 									    
 			[Bindable]
-			private var condition3:String =  'x+=1'						   
-			private var code3:String = 'var test:int = 1\n' +
-									   'for (var i:int = 0; i < 100000; i++)\n' +
-									   '{\n' +
-									   '	test+=1;\n' +
-									   '}\n' 
+			private var condition3:String =  'dictionary'						   
+			private var code3:String = 'var toto:String \n' +
+										'for (var i:int = 0; i < 10000; i++)\n' +
+										'{\n' +
+										'	toto = dictionary[i.toString()]\n' +
+										'}\n'; 
 									   
 			private function runStdTest():Number
 			{
+				var object:Object = new Object
+				object = generateObject(object)
 				time = getTimer();
-				var test:int = 1;
-				for (var i:int = 0; i < 100000; i++)
+				var toto:String 
+				for (var i:int = 0; i < 10000; i++)
 				{
-					test = test + 1;
+					toto = object[i.toString()]
 				} 
 				return (getTimer() - time);
 			}
 			
-			
+			private function generateObject(object:Object):Object
+			{
+				
+				for (var i:int = 0; i < 10000; i++)
+				{
+					object[i.toString()] = i
+				} 
+				return object
+			}
+	/////////////////		
 			private function runOptTest():Number
 			{
+				var array:Array = new Array
+				array = generateArray(array)
 				time = getTimer();
-				var test:int = 1;
-				for (var i:int = 0; i < 100000; i++)
+				var toto:String 
+				for (var i:int = 0; i < 10000; i++)
 				{
-					test++;
-				}  
+					toto = array[i.toString()]
+				} 
 				return (getTimer() - time);
 			}
-			
+			private function generateArray(array:Array):Array
+			{
+				for (var i:int = 0; i < 10000; i++)
+				{
+					array[i.toString()] = i
+				} 
+				return array
+			}
+	//////////////////		
 			private function runOpt2Test():Number
 			{
+				var dictionary:Dictionary = new Dictionary
+				dictionary = generateDictionary(dictionary)
 				time = getTimer();
-				var test:int = 1;
-				for (var i:int = 0; i < 100000; i++)
+				var toto:String 
+				for (var i:int = 0; i < 10000; i++)
 				{
-					test += 1;
+					toto = dictionary[i.toString()]
 				} 
 				return (getTimer() - time);
 			}
 			
+			private function generateDictionary(dictionary:Dictionary):Dictionary
+			{
+				for (var i:int = 0; i < 10000; i++)
+				{
+					dictionary[i.toString()] = i
+				} 
+				return dictionary
+			}
 			
 			private function run():void
 			{
